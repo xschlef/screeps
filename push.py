@@ -4,6 +4,31 @@ import os
 import json
 import sys
 
+"""
+Simple push script for the screeps API.
+No real error handling.
+
+Usage:
+./push.py <dir> <branch>
+or
+./push.py <dir>
+
+Add user credentials as json to .screeps_login
+{
+"user": "email",
+"password": "banana"
+}
+"""
+
+if len(sys.argv) < 2:
+    print("""You have to specify the directory to push on the commandline.
+Branch defaults to "default"
+
+./push.py <dir> <branch>
+or
+./push.py <dir>""")
+    sys.exit(0)
+
 src_dir = sys.argv[1]
 branch = "default"
 if len(sys.argv) > 2:
