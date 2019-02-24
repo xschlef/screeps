@@ -7,10 +7,6 @@ var structureController = (function () {
     var structures = {
         1: {
             "container": 1,
-        },
-        2: {
-            "container": 1,
-            "extension": 5,
         }
     }
 
@@ -55,12 +51,16 @@ var structureController = (function () {
                 roomStructures[type] = (roomStructures[type] || 0) + 1;
             });
 
-            _.forOwn(structures[controller.level], function (count, type) {
-                if (roomStructures[type] === undefined || roomStructures[type] < count) {
-                    this.constructionSite(type, roomStructures[type]);
-                    return false;
-                }
-            }.bind(this));
+            if(controller !== null) {
+                _.forOwn(structures[controller.level], function (count, type) {
+                    if (roomStructures[type] === undefined || roomStructures[type] < count) {
+                        this.constructionSite(type, roomStructures[type]);
+                        return false;
+                    }
+                }.bind(this));
+            } else {
+                helperError.message("Controller is NULL")
+            }
 
             //createConstructionSite(x, y, structureType, [name])
             //(pos, structureType, [name])
@@ -69,8 +69,15 @@ var structureController = (function () {
 
         constructionSite: function (type, index = 0) {
             var name = type + Game.time;
-            var pos = this["_pos_" + type](index);
-            var status = room.createConstructionSite(pos.x, pos.y, type, name);
+
+
+            for(var i=0; i < 4; i++) {
+                var pos = this["_pos_" + type](index + i);
+                var status = room.createConstructionSite(pos.x, pos.y, type, name);
+                if (status === OK) {
+                    i = 4;
+                }
+            }
 
             if (OK !== status) {
                 var message = helperError.message(status);
@@ -86,19 +93,19 @@ var structureController = (function () {
             ++index;
 
             if (index % 4 === 0) {
-                y -= (2 * index);
+                y -= (1);
             }
 
             if (index % 4 === 1) {
-                x -= (2 * index);
+                x -= (1);
             }
 
             if (index % 4 === 2) {
-                y += (2 * index);
+                y += (1);
             }
 
             if (index % 4 === 3) {
-                x += (2 * index);
+                x += (1);
             }
 
             return room.getPositionAt(x, y);

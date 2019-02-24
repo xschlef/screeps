@@ -9,13 +9,6 @@ var behaviorCreep = require('behavior.creep');
 
 /** */
 module.exports.loop = function () {
-    //console.log(JSON.stringify(Game, 0, 2));
-
-
-
-
-
-
 
     /** Iterate through each room and do the stuff */
     _.forOwn(Game.rooms, function (room) {

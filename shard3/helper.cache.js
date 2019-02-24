@@ -1,6 +1,3 @@
-/**
- * Spawn Structure
- */
 var helperCache = (function () {
     var room;
 

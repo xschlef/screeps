@@ -1,8 +1,3 @@
-/**
- * Spawn Structure
- *
- * @link https://emojipedia.org/objects/
- */
 var helperError = (function () {
     var test;
 

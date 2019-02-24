@@ -1,8 +1,4 @@
-/**
- * Tower Structure
- *
- * @link https://emojipedia.org/objects/
- */
+
 var structureTower = (function () {
     var helperError = require('helper.error');
 
@@ -13,10 +9,9 @@ var structureTower = (function () {
 		/** */
 		run: function(room) {
             this.room = room;
+            if (_.has(room.memory, "structure_tower")) {
+                var tower = Game.getObjectById(room.memory.structure_tower[0])
 
-            var tower = Game.getObjectById('79a15f101463c1efab5253af');
-
-            if (tower) {
                 var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
                     filter: (structure) => structure.hits < structure.hitsMax
                 });

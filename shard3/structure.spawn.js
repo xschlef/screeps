@@ -1,7 +1,5 @@
 /**
  * Spawn Structure
- *
- * @link https://emojipedia.org/objects/
  */
 var structureSpawn = (function () {
     var helperError = require('helper.error');
@@ -10,8 +8,8 @@ var structureSpawn = (function () {
     var spawn;
 
 	var rolePriorities = {
-		'harvester': 1,
-		'upgrader': 1,
+		'harvester': 6,
+		'upgrader': 10,
 		'builder': 1,
     };
 
@@ -57,13 +55,6 @@ var structureSpawn = (function () {
                 }
             }.bind(this));
         },
-
-        /**
-         * Spawn creep wrapper
-         *
-         * @param {string} role
-         * @param {array} parts
-         */
         spawnCreep: function (role, parts) {
             var name = role + Game.time;
             var status = spawn.spawnCreep(parts, name, {
@@ -77,38 +68,15 @@ var structureSpawn = (function () {
                 console.log(`Cannot spawn ${role}: ${message}`);
             }
         },
-
-        /**
-         * Creep defination for upgrader
-         */
 		_spawn_upgrader: function () {
-            this.spawnCreep('upgrader', [WORK,CARRY,MOVE]);
+            this.spawnCreep('upgrader', [WORK,CARRY,MOVE,MOVE]);
 		},
-
-        /**
-         * Creep defination for harvester
-         */
 		_spawn_harvester: function () {
-            this.spawnCreep('harvester', [WORK,CARRY,MOVE]);
+            this.spawnCreep('harvester', [WORK,CARRY,MOVE,MOVE]);
 		},
-
-        /**
-         * Creep defination for harvester
-         */
 		_spawn_builder: function () {
-            this.spawnCreep('builder', [WORK,CARRY,MOVE]);
+            this.spawnCreep('builder', [WORK,CARRY,MOVE,MOVE]);
 		},
-
-        /**
-         * Show a message when a spawner is spawning
-         *
-         * this.spawn.spawning
-         * {
-         *     "name": "upgrader600",
-         *     "needTime": 9,
-         *     "remainingTime": 3
-         * }
-         */
 		spawnMessage: function () {
 			if (spawn.spawning) {
                 var creep = Game.creeps[spawn.spawning.name];
