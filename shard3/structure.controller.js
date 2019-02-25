@@ -145,16 +145,18 @@ var structureController = (function () {
          * Display status messages
          */
         progressMessage: function () {
-            var progress = Math.floor(
-                (controller.progress / controller.progressTotal) * 100
-            );
+            if(controller !== null) {
+                var progress = Math.floor(
+                    (controller.progress / controller.progressTotal) * 100
+                );
 
-            room.visual.text(
-                `RCL ${controller.level} (${progress}%)`,
-                controller.pos.x + 1,
-                controller.pos.y - 1,
-                {align: 'left', opacity: 0.8}
-            );
+                room.visual.text(
+                    `RCL ${controller.level} (${progress}%)`,
+                    controller.pos.x + 1,
+                    controller.pos.y - 1,
+                    {align: 'left', opacity: 0.8}
+                );
+            }
         },
 	}
 })();

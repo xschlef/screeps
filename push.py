@@ -53,3 +53,5 @@ headers = {"Content-Type": "application-json; charset = utf-8"}
 r = requests.post("https://screeps.com/api/user/code", auth=(auth_data['user'], auth_data['password']), headers=headers, data=req)
 if(r.status_code == 200):
     print("Pushed %s successfully to branch %s" % (src_dir, branch))
+else:
+    print(r.status_code)
