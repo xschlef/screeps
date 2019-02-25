@@ -9,8 +9,9 @@ var structureSpawn = (function () {
 
 	var rolePriorities = {
 		'harvester': 6,
-		'upgrader': 10,
-		'builder': 1,
+		'upgrader': 4,
+		'builder': 2,
+        'attacker': 1,
     };
 
     var config = {
@@ -76,6 +77,9 @@ var structureSpawn = (function () {
 		},
 		_spawn_builder: function () {
             this.spawnCreep('builder', [WORK,CARRY,MOVE,MOVE]);
+		},
+		_spawn_attacker: function () {
+            this.spawnCreep('attacker', [ATTACK,MOVE]);
 		},
 		spawnMessage: function () {
 			if (spawn.spawning) {
