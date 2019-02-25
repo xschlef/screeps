@@ -12,17 +12,20 @@ var structureTower = (function () {
             if (_.has(room.memory, "structure_tower")) {
                 var tower = Game.getObjectById(room.memory.structure_tower[0])
 
-                var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-                    filter: (structure) => structure.hits < structure.hitsMax
-                });
-                var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                if (tower !== null) {
+                    // only repair if below half hitpoints, so attackers are prioritized
+                    var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+                        filter: (structure) => structure.hits < math.floor(structure.hitsMax / 2)
+                    });
+                    var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
 
-                if(closestDamagedStructure) {
-                    tower.repair(closestDamagedStructure);
-                }
+                    if (closestDamagedStructure) {
+                        tower.repair(closestDamagedStructure);
+                    }
 
-                if(closestHostile) {
-                    tower.attack(closestHostile);
+                    if (closestHostile) {
+                        tower.attack(closestHostile);
+                    }
                 }
             }
 		},
