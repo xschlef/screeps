@@ -35,7 +35,7 @@ var roleBuilder = (function () {
 			var spawn = Game.getObjectById(creep.room.memory.structure_spawn[0]);
 
 			if (spawn !== null) {
-				if (spawn.energy > 50) {
+				if (spawn.energy > 200) {
 					if (creep.withdraw(spawn, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
 						creep.moveTo(spawn, {visualizePathStyle: {stroke: '#ffaa00'}});
 					}

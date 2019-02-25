@@ -8,7 +8,7 @@ var structureController = (function () {
         1: {
             "container": 1,
         }
-    }
+    };
 
 	return {
 

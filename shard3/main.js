@@ -21,4 +21,4 @@ module.exports.loop = function () {
     });
 
     behaviorCreep.run();
-}
+};
