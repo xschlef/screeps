@@ -1,7 +1,7 @@
 var helperCache = (function () {
     var room;
 
-	return {
+    return {
         run: function (currentRoom) {
             room = currentRoom;
 
@@ -28,7 +28,7 @@ var helperCache = (function () {
          *
          * @param {string} structure
          */
-		cacheStructure: function(structure) {
+        cacheStructure: function (structure) {
             var cacheKey = 'structure_' + structure;
 
             if (room.memory[cacheKey] === undefined) {
@@ -39,8 +39,8 @@ var helperCache = (function () {
                 room.memory[cacheKey] = _.map(structures, "id");
                 console.log(`${structure} IDs cached`);
             }
-		},
-	}
+        },
+    }
 })();
 
 module.exports = helperCache;

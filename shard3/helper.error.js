@@ -1,7 +1,7 @@
 var helperError = (function () {
     var test;
 
-	return {
+    return {
 
         /**
          * Get the error message from the code. Some codes are context-specific
@@ -11,7 +11,7 @@ var helperError = (function () {
          * @param {string} code
          * @param {string} context
          */
-		message: function(code, context = false) {
+        message: function (code, context = false) {
             var errors = {
                 "0": "OK",
                 "-1": "ERR_NOT_OWNER",
@@ -39,8 +39,8 @@ var helperError = (function () {
             }
 
             return errors[code];
-		},
-	}
+        },
+    }
 })();
 
 module.exports = helperError;

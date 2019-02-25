@@ -10,10 +10,10 @@ var structureController = (function () {
         }
     };
 
-	return {
+    return {
 
-		/** */
-		run: function(currentRoom) {
+        /** */
+        run: function (currentRoom) {
             room = currentRoom;
             controller = Game.getObjectById(room.memory.structure_controller[0]);
 
@@ -43,7 +43,7 @@ var structureController = (function () {
          * STRUCTURE_CONTAINER: "container",
          * STRUCTURE_NUKER: "nuker",
          */
-        constructionSites: function() {
+        constructionSites: function () {
             var roomStructures = {};
 
             _.forOwn(room.find(FIND_MY_STRUCTURES), function (structure) {
@@ -51,7 +51,7 @@ var structureController = (function () {
                 roomStructures[type] = (roomStructures[type] || 0) + 1;
             });
 
-            if(controller !== null) {
+            if (controller !== null) {
                 _.forOwn(structures[controller.level], function (count, type) {
                     if (roomStructures[type] === undefined || roomStructures[type] < count) {
                         this.constructionSite(type, roomStructures[type]);
@@ -71,7 +71,7 @@ var structureController = (function () {
             var name = type + Game.time;
 
 
-            for(var i=0; i < 4; i++) {
+            for (var i = 0; i < 4; i++) {
                 var pos = this["_pos_" + type](index + i);
                 var status = room.createConstructionSite(pos.x, pos.y, type, name);
                 if (status === OK) {
@@ -145,7 +145,7 @@ var structureController = (function () {
          * Display status messages
          */
         progressMessage: function () {
-            if(controller !== null) {
+            if (controller !== null) {
                 var progress = Math.floor(
                     (controller.progress / controller.progressTotal) * 100
                 );
@@ -158,7 +158,7 @@ var structureController = (function () {
                 );
             }
         },
-	}
+    }
 })();
 
 module.exports = structureController;

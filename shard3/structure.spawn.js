@@ -6,10 +6,10 @@ var structureSpawn = (function () {
     var room;
     var spawn;
 
-	var rolePriorities = {
-		'harvester': 8,
-		'upgrader': 4,
-		'builder': 1,
+    var rolePriorities = {
+        'harvester': 8,
+        'upgrader': 4,
+        'builder': 1,
         'attacker': 1,
     };
 
@@ -17,23 +17,23 @@ var structureSpawn = (function () {
         'spawnCache': 60
     };
 
-	return {
+    return {
 
-		/** */
-		run: function(currentRoom) {
+        /** */
+        run: function (currentRoom) {
             room = currentRoom;
             spawn = Game.getObjectById(room.memory.structure_spawn[0]);
 
             if (null === spawn)
                 return false;
 
-			/** Creep Spawning */
-			this.renewCreeps();
-			this.spawnCreeps();
-		},
+            /** Creep Spawning */
+            this.renewCreeps();
+            this.spawnCreeps();
+        },
         renewCreeps: function () {
-		    if(!spawn.spawning && spawn.memory.hasOwnProperty("renew")) {
-		        if(spawn.memory.renew) {
+            if (!spawn.spawning && spawn.memory.hasOwnProperty("renew")) {
+                if (spawn.memory.renew) {
                     var target = Game.getObjectById(spawn.memory.renew);
                     var renew = spawn.renewCreep(target);
                     if (renew !== OK) {
@@ -49,7 +49,7 @@ var structureSpawn = (function () {
         /**
          * Check to see if any creeps need to be spawned
          */
-		spawnCreeps: function () {
+        spawnCreeps: function () {
             var creeps = room.find(FIND_MY_CREEPS);
             var creepRoles = {};
 
@@ -65,8 +65,8 @@ var structureSpawn = (function () {
             // needed
             _.forOwn(rolePriorities, function (count, role) {
                 if (creepRoles[role] === undefined || creepRoles[role] < count) {
-                        this["_spawn_" + role]();
-                        return false;
+                    this["_spawn_" + role]();
+                    return false;
                 }
             }.bind(this));
         },
@@ -85,28 +85,28 @@ var structureSpawn = (function () {
         },
         // parts cost:
         // https://screeps.fandom.com/wiki/Creep
-		_spawn_upgrader: function () {
+        _spawn_upgrader: function () {
             if (spawn.energy > 250) {
                 this.spawnCreep('upgrader', [WORK, CARRY, MOVE, MOVE]);
             }
-		},
-		_spawn_harvester: function () {
+        },
+        _spawn_harvester: function () {
             if (spawn.energy > 250) {
                 this.spawnCreep('harvester', [WORK, CARRY, MOVE, MOVE]);
             }
-		},
-		_spawn_builder: function () {
+        },
+        _spawn_builder: function () {
             if (spawn.energy > 200) {
                 this.spawnCreep('builder', [WORK, CARRY, MOVE]);
             }
-		},
-		_spawn_attacker: function () {
+        },
+        _spawn_attacker: function () {
             if (spawn.energy > 130) {
                 this.spawnCreep('attacker', [ATTACK, MOVE]);
             }
-		},
-		spawnMessage: function () {
-			if (spawn.spawning) {
+        },
+        spawnMessage: function () {
+            if (spawn.spawning) {
                 var creep = Game.creeps[spawn.spawning.name];
                 var time = spawn.spawning;
 
@@ -116,15 +116,15 @@ var structureSpawn = (function () {
                     ((time.needTime - time.remainingTime + 1) / time.needTime) * 100
                 );
 
-				room.visual.text(
-					`${creep.memory.role} (${percent}%)`,
-					spawn.pos.x,
-					spawn.pos.y + 1.5,
+                room.visual.text(
+                    `${creep.memory.role} (${percent}%)`,
+                    spawn.pos.x,
+                    spawn.pos.y + 1.5,
                     {align: 'center', opacity: 0.8}
                 );
-			}
-		}
-	}
+            }
+        }
+    }
 })();
 
 module.exports = structureSpawn;
