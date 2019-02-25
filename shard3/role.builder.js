@@ -1,5 +1,5 @@
-var roleBuilder = (function () {
-    var creep;
+let roleBuilder = (function () {
+    let creep;
 
     return {
         run: function (currentCreep) {
@@ -22,7 +22,7 @@ var roleBuilder = (function () {
         },
 
         build: function () {
-            var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+            let targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if (targets.length) {
                 if (creep.build(targets[0]) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
@@ -31,7 +31,7 @@ var roleBuilder = (function () {
         },
 
         harvest: function () {
-            var spawn = Game.getObjectById(creep.room.memory.structure_spawn[0]);
+            let spawn = Game.getObjectById(creep.room.memory.structure_spawn[0]);
 
             if (spawn !== null) {
                 if (spawn.energy > 200) {
@@ -42,7 +42,7 @@ var roleBuilder = (function () {
                 }
             }
 
-            var sources = creep.room.find(FIND_SOURCES);
+            let sources = creep.room.find(FIND_SOURCES);
             if (sources !== null) {
                 if (creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(sources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
