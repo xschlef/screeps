@@ -7,10 +7,9 @@ var structureSpawn = (function () {
     var spawn;
 
     var rolePriorities = {
-        'harvester': 8,
+        'harvester': 5,
         'upgrader': 4,
         'builder': 1,
-        'attacker': 1,
     };
 
     var config = {
@@ -73,7 +72,7 @@ var structureSpawn = (function () {
         spawnCreep: function (role, parts) {
             var name = role + Game.time;
             var status = spawn.spawnCreep(parts, name, {
-                memory: {role: role}
+                memory: {role: role, home: spawn.id}
             });
 
             if (OK === status || ERR_BUSY === status) {
@@ -92,7 +91,7 @@ var structureSpawn = (function () {
         },
         _spawn_harvester: function () {
             if (spawn.energy > 250) {
-                this.spawnCreep('harvester', [WORK, CARRY, MOVE, MOVE]);
+                this.spawnCreep('harvester', [WORK, CARRY, CARRY, MOVE, MOVE]);
             }
         },
         _spawn_builder: function () {

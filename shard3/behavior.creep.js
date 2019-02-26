@@ -7,6 +7,7 @@ var behaviorCreep = (function () {
     var roleHarvester = require('role.harvester');
     var roleUpgrader = require('role.upgrader');
     var roleBuilder = require('role.builder');
+    var roleAttacker = require('role.attacker');
 
     return {
 
@@ -22,6 +23,9 @@ var behaviorCreep = (function () {
                 }
                 if (creep.memory.role == 'builder') {
                     roleBuilder.run(creep);
+                }
+                if (creep.memory.role == 'attacker') {
+                    roleAttacker.run(creep);
                 }
             }
         },

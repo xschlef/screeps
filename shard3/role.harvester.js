@@ -34,6 +34,9 @@ let roleHarvester = {
                         creep.say('Requesting renew from spawn');
                     }
                 }
+            } else {
+                creep.say("Going home.")
+                creep.moveTo(Game.getObjectById(creep.memory.home));
             }
         }
     }

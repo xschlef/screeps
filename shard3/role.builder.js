@@ -27,6 +27,9 @@ let roleBuilder = (function () {
                 if (creep.build(targets[0]) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                 }
+            } else {
+                creep.say("Going home");
+                creep.moveTo(Game.getObjectById(creep.memory.home));
             }
         },
 
@@ -40,6 +43,9 @@ let roleBuilder = (function () {
                     }
                     return false;
                 }
+            } else {
+                creep.say("Going home")
+                creep.moveTo(Game.getObjectById(creep.memory.home));
             }
 
             let sources = creep.room.find(FIND_SOURCES);
