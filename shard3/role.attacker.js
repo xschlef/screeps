@@ -8,7 +8,7 @@ let roleAttacker = (function () {
                 creep.memory.waiting--;
                 return;
             }
-            this.attack(currentCreep);
+            this.attack(creep);
         },
         attack: function (currentCreep) {
             let target;
