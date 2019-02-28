@@ -1,25 +1,32 @@
 let roleBuilder = (function () {
+    var c = require("helper.constants");
     let creep;
 
     return {
         run: function (currentCreep) {
             creep = currentCreep;
-
-            if (creep.memory.building && creep.carry.energy === 0) {
-                creep.memory.building = false;
-                creep.say('harvesting');
-            }
-            if (!creep.memory.building && creep.carry.energy === creep.carryCapacity) {
-                creep.memory.building = true;
-                creep.say('building');
+            // newly spawned creeps do not have a state yet
+            if (!creep.memory.hasOwnProperty("state")) {
+                creep.memory.state = c.STATE_CREEP_HARVESTING;
             }
 
-            if (creep.memory.building) {
+            if (creep.memory.state === c.STATE_CREEP_BUILDING && creep.carry.energy === 0) {
+                creep.memory.state = c.STATE_CREEP_HARVESTING;
+            }
+
+            if (creep.memory.state === c.STATE_CREEP_HARVESTING && creep.carry.energy === creep.carryCapacity) {
+                creep.memory.state = c.STATE_CREEP_BUILDING;
+            }
+
+            if (creep.memory.state === c.STATE_CREEP_BUILDING) {
                 if(! this.repair()) {
                     this.build();
                 }
-            } else {
+            } else if (creep.memory.state === c.STATE_CREEP_HARVESTING) {
                 this.harvest();
+            } else {
+                creep.memory.state = c.STATE_CREEP_HARVESTING;
+
             }
         },
 
@@ -30,7 +37,6 @@ let roleBuilder = (function () {
                 }
             });
             if (closestDamagedStructure) {
-                creep.say("Repairing");
                 creep.repair(closestDamagedStructure);
             }
             return closestDamagedStructure !== null;

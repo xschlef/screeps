@@ -8,7 +8,7 @@ var structureSpawn = (function () {
 
     var rolePriorities = {
         'harvester': 8,
-        'upgrader': 3,
+        'upgrader': 6,
         'builder': 2,
     };
 
@@ -23,10 +23,6 @@ var structureSpawn = (function () {
             "5bbcafe29099fc012e63b55b", // E48S6
             "5bbcafe29099fc012e63b55b"  // E48S6
     ];
-
-    var config = {
-        'spawnCache': 60
-    };
 
     return {
 
@@ -44,16 +40,19 @@ var structureSpawn = (function () {
             this.fixSources();
         },
         fixSources: function () {
-            spawn.memory.fix_src = spawn.memory.fix_src || 500;
+            if(!spawn.memory.hasOwnProperty("fix_src")) {
+                spawn.memory.fix_src = 10;
+            }
             if (spawn.memory.fix_src === 0) {
+                console.log("Fixing source ids");
                 let i = 0;
-                for(let crp in Game.creeps) {
-                    if (Game.creeps[crp].memory.role === "harvester"){
-                        Game.creeps[crp].memory.source_id = sourcePriorites[i];
+                for(let f in Game.creeps) {
+                    if (Game.creeps[f].memory.role === "harvester") {
+                        Game.creeps[f].memory.source_id = sourcePriorites[i];
                         i++;
                     }
                 }
-                spawn.memory.fix_src = 500;
+                spawn.memory.fix_src = 100;
             }
             spawn.memory.fix_src--;
         },
@@ -66,7 +65,7 @@ var structureSpawn = (function () {
                         console.log("Clearing renew target, as it is out of range or I am out of energy.");
                         delete spawn.memory.renew;
                     } else {
-                        console.log("Renewing creep.")
+                        console.log("Renewing " + target.name)
                     }
                 }
             }
@@ -101,7 +100,6 @@ var structureSpawn = (function () {
                 if(count <= sourcePriorites.length) {
                     src_id = sourcePriorites[count];
                 }
-                console.log(src_id);
                 memory["source_id"] = src_id;
             }
             var status = spawn.spawnCreep(parts, name, {
@@ -118,15 +116,38 @@ var structureSpawn = (function () {
         // parts cost:
         // https://screeps.fandom.com/wiki/Creep
         _spawn_upgrader: function (count) {
+            if (room.energyAvailable > 749) {
+                this.spawnCreep('upgrader',
+                    [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], count);
+                return;
+            }
+            if (room.energyAvailable > 599) {
+                this.spawnCreep('upgrader',
+                    [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], count);
+                return;
+            }
             if (room.energyAvailable > 499) {
                 this.spawnCreep('upgrader', [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], count);
+                return;
             }
 
             if (room.energyCapacityAvailable < 350 && room.energyAvailable > 249) {
                 this.spawnCreep('upgrader', [WORK, CARRY, MOVE, MOVE], count);
+                return;
             }
         },
         _spawn_harvester: function (count) {
+            if (room.energyAvailable > 749) {
+                this.spawnCreep('harvester',
+                    [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], count);
+                return;
+            }
+            if (room.energyAvailable > 599) {
+                this.spawnCreep('harvester',
+                    [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+                    count);
+                return;
+            }
             if (room.energyAvailable > 499) {
                 this.spawnCreep('harvester', [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], count);
                 return;
@@ -140,6 +161,17 @@ var structureSpawn = (function () {
             }
         },
         _spawn_builder: function (count) {
+            if (room.energyAvailable > 749) {
+                this.spawnCreep('builder',
+                    [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], count);
+                return;
+            }
+            if (room.energyAvailable > 599) {
+                this.spawnCreep('builder',
+                    [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+                    count);
+                return;
+            }
             if (room.energyAvailable > 499) {
                 this.spawnCreep('builder', [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], count);
             }

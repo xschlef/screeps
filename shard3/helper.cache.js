@@ -8,6 +8,7 @@ var helperCache = (function () {
             this.garbageCollect();
             this.cacheStructure(STRUCTURE_CONTROLLER);
             this.cacheStructure(STRUCTURE_SPAWN);
+            this.cacheStructure(STRUCTURE_TOWER);
         },
 
         /**

@@ -1,28 +1,13 @@
+var c = require("helper.constants");
 let roleHarvester = {
     run: function (creep) {
-        // if we are healthy, don't wait for renew
-        if (creep.ticksToLive > 1000 && creep.memory.state === "renew") {
-            creep.memory.waiting = 0;
-        }
-        // wait the wait time
-        if (creep.memory.waiting > 0) {
-            Game.getObjectById(creep.memory.home).memory.renew = creep.id;
-            creep.memory.waiting--;
-            creep.say("Waiting");
-        }
-
-        // exit harvest if we are no longer waiting
-        if (creep.memory.state === "renew" && creep.memory.waiting === 0) {
-            creep.memory.state = "harvesting";
-        }
-
         if (!creep.memory.hasOwnProperty("state")) {
-            creep.memory.state = "harvesting";
+            creep.memory.state = c.STATE_CREEP_HARVESTING;
         }
 
-        if (creep.memory.state === "harvesting") {
+        if (creep.memory.state === c.STATE_CREEP_HARVESTING) {
             if (creep.carry.energy >= creep.carryCapacity) {
-                creep.memory.state = "transferring";
+                creep.memory.state = c.STATE_CREEP_TRANSFERRING;
             } else {
                 let source = Game.getObjectById(creep.memory.source_id);
                 if (!source) {
@@ -35,12 +20,15 @@ let roleHarvester = {
             }
         }
 
-        if (creep.memory.state === "transferring") {
+        if (creep.memory.state === c.STATE_CREEP_TRANSFERRING) {
             let targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType === STRUCTURE_EXTENSION && creep.ticksToLive > 500 ||
+                    return (
+                        structure.structureType === STRUCTURE_EXTENSION ||
+                        structure.structureType === STRUCTURE_CONTAINER ||
                         structure.structureType === STRUCTURE_SPAWN ||
-                        structure.structureType === STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+                        structure.structureType === STRUCTURE_TOWER
+                        ) && structure.energy < structure.energyCapacity;
                 }
             });
             if (creep.carry.energy !== 0) {
@@ -52,31 +40,8 @@ let roleHarvester = {
                 } else {
                     creep.moveTo(Game.getObjectById(creep.memory.home));
                 }
-            }
-            if (creep.carry.energy === 0) {
-                if (targets.length > 0) {
-                    if (creep.ticksToLive < 1000) {
-                        creep.memory.state = "move_renew";
-                    } else {
-                        creep.memory.state = "harvesting";
-                    }
-                } else {
-                    creep.memory.state = "harvesting";
-                }
-            }
-        }
-        if (creep.memory.state === "move_renew") {
-            let spawn = Game.getObjectById(creep.memory.home);
-            creep.moveTo(spawn);
-            if (spawn.pos.getRangeTo(creep.pos.x, creep.pos.y) === 1) {
-                spawn.memory.renew = creep.id;
-                let offset = 5;
-                if (spawn.spawning) {
-                    offset = 12;
-                }
-                creep.memory.waiting = offset;
-                creep.memory.state = "renew";
-                creep.say('Requesting renew from spawn');
+            } else {
+                creep.memory.state = c.STATE_CREEP_HARVESTING;
             }
         }
     }

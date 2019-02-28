@@ -1,5 +1,6 @@
 var structureTower = (function () {
     var helperError = require('helper.error');
+    var cache = require('helper.cache');
 
     var room;
 
@@ -20,10 +21,22 @@ var structureTower = (function () {
 
                     if (closestDamagedStructure) {
                         tower.repair(closestDamagedStructure);
+                        return;
                     }
 
                     if (closestHostile) {
                         tower.attack(closestHostile);
+                        return;
+                    }
+
+                    var closestDamagedCreep = tower.pos.findClosestByRange(FIND_MY_CREEPS, {
+                        filter: (c) => c.hits < c.hitsMax
+                    });
+
+                    if (closestDamagedCreep) {
+                        tower.heal(closestDamagedCreep);
+                        console.log("Healing " + closestDamagedCreep.name);
+                        return;
                     }
                 }
             }
