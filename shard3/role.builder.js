@@ -56,25 +56,25 @@ let roleBuilder = (function () {
         harvest: function () {
             let spawn = Game.getObjectById(creep.room.memory.structure_spawn[0]);
 
-            if (spawn !== null) {
-                if (spawn.energy > 200) {
-                    if (creep.withdraw(spawn, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(spawn, {visualizePathStyle: {stroke: '#ffaa00'}});
+            if (spawn !== null && creep.room.energyAvailable > 600) {
+                let targets = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (
+                            structure.structureType === STRUCTURE_EXTENSION ||
+                            structure.structureType === STRUCTURE_SPAWN
+                        ) && structure.energy > 0;
                     }
-                    return false;
+                });
+                if (targets.length > 0) {
+                    if (creep.withdraw(targets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                        creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+                    }
                 }
+                return false;
             } else {
                 creep.moveTo(Game.getObjectById(creep.memory.home));
                 return false;
             }
-
-            let sources = creep.room.find(FIND_SOURCES);
-            if (sources !== null) {
-                if (creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(sources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
-                }
-            }
-
         },
     }
 })();

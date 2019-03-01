@@ -7,18 +7,16 @@ var structureSpawn = (function () {
     var spawn;
 
     var rolePriorities = {
-        'harvester': 8,
+        'harvester': 5,
         'upgrader': 6,
-        'builder': 2,
+        'builder': 1,
     };
 
     var sourcePriorites = [
             "5bbcafd19099fc012e63b3d0", // E47S6 at spawn
             "5bbcafd19099fc012e63b3d0", // E47S6 at spawn
-            "5bbcafd19099fc012e63b3ce", // E47S6
-            "5bbcafd19099fc012e63b3ce", // E47S6
-            "5bbcafd19099fc012e63b3ce", // E47S6
-            "5bbcafd19099fc012e63b3ce", // E47S6
+            "5bbcafd19099fc012e63b3d0", // E47S6 at spawn
+            "5bbcafd19099fc012e63b3ce", // E47S6 
             "5bbcafe29099fc012e63b55b", // E48S6
             "5bbcafe29099fc012e63b55b", // E48S6
             "5bbcafe29099fc012e63b55b"  // E48S6
@@ -121,12 +119,12 @@ var structureSpawn = (function () {
                     [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], count);
                 return;
             }
-            if (room.energyAvailable > 599) {
+            if (room.energyAvailable > 599 && room.energyCapacityAvailable < 750) {
                 this.spawnCreep('upgrader',
                     [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], count);
                 return;
             }
-            if (room.energyAvailable > 499) {
+            if (room.energyAvailable > 499 && room.energyCapacityAvailable < 600) {
                 this.spawnCreep('upgrader', [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], count);
                 return;
             }
@@ -142,17 +140,17 @@ var structureSpawn = (function () {
                     [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], count);
                 return;
             }
-            if (room.energyAvailable > 599) {
+            if (room.energyAvailable > 599 && count < 4) {
                 this.spawnCreep('harvester',
                     [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
                     count);
                 return;
             }
-            if (room.energyAvailable > 499) {
+            if (room.energyAvailable > 499 && count < 3) {
                 this.spawnCreep('harvester', [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], count);
                 return;
             }
-            if (room.energyCapacityAvailable < 350 && room.energyAvailable > 249) {
+            if (room.energyCapacityAvailable < 350 && room.energyAvailable > 249 && count < 2) {
                 this.spawnCreep('harvester', [WORK, CARRY, CARRY, MOVE, MOVE], count);
                 return;
             }
@@ -166,13 +164,13 @@ var structureSpawn = (function () {
                     [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], count);
                 return;
             }
-            if (room.energyAvailable > 599) {
+            if (room.energyAvailable > 599 && room.energyCapacityAvailable < 750) {
                 this.spawnCreep('builder',
                     [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
                     count);
                 return;
             }
-            if (room.energyAvailable > 499) {
+            if (room.energyAvailable > 499 && room.energyCapacityAvailable < 600) {
                 this.spawnCreep('builder', [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], count);
             }
             if (room.energyCapacityAvailable < 350 && room.energyAvailable > 249) {

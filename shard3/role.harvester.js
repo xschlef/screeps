@@ -21,11 +21,10 @@ let roleHarvester = {
         }
 
         if (creep.memory.state === c.STATE_CREEP_TRANSFERRING) {
-            let targets = creep.room.find(FIND_STRUCTURES, {
+            let targets = creep.room.find(FIND_MY_STRUCTURES, {
                 filter: (structure) => {
                     return (
                         structure.structureType === STRUCTURE_EXTENSION ||
-                        structure.structureType === STRUCTURE_CONTAINER ||
                         structure.structureType === STRUCTURE_SPAWN ||
                         structure.structureType === STRUCTURE_TOWER
                         ) && structure.energy < structure.energyCapacity;

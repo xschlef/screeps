@@ -14,7 +14,7 @@ var structureTower = (function () {
 
                 if (tower !== null) {
                     // only repair if below half hitpoints, so attackers are prioritized
-                    var closestDamagedStructure = tower.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+                    var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: (structure) => structure.hits < Math.floor(structure.hitsMax / 2)
                     });
                     var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);

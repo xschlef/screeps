@@ -41,11 +41,7 @@ var behaviorCreep = (function () {
             }
             if (creep.memory.state === constants.STATE_CREEP_RENEW) {
                 let home = Game.getObjectById(creep.memory.home);
-                if (home.room.energyAvailable < 200){
-                    console.log("Cannot renew. Out of energy.");
-                    return;
-                }
-                if (creep.ticksToLive > 1200) {
+                if (home.room.energyAvailable < 200 || creep.ticksToLive > 1200) {
                     creep.memory.waiting = 0;
                     creep.memory.state = creep.memory.old_state;
                     delete creep.memory.old_state;
@@ -57,11 +53,11 @@ var behaviorCreep = (function () {
 
                 if (creep.pos.inRangeTo(home, 1)) {
                     if (home.hasOwnProperty("renew") || home.spawning) {
-                        creep.memory.waiting = 30;
+                        creep.memory.waiting = 10;
                         console.log(creep.name + " waiting for spawn to renew");
                     } else {
                         home.memory.renew = creep.id;
-                        creep.memory.waiting = 50;
+                        creep.memory.waiting = 10;
                         console.log(creep.name + " requesting renew.")
                     }
                 } else {
