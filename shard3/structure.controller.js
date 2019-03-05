@@ -18,7 +18,7 @@ var structureController = (function () {
             controller = Game.getObjectById(room.memory.structure_controller[0]);
 
 
-            this.constructionSites();
+           // this.constructionSites();
             this.progressMessage();
         },
 
@@ -43,102 +43,6 @@ var structureController = (function () {
          * STRUCTURE_CONTAINER: "container",
          * STRUCTURE_NUKER: "nuker",
          */
-        constructionSites: function () {
-            var roomStructures = {};
-
-            _.forOwn(room.find(FIND_MY_STRUCTURES), function (structure) {
-                var type = structure.structureType;
-                roomStructures[type] = (roomStructures[type] || 0) + 1;
-            });
-
-            if (controller !== null) {
-                _.forOwn(structures[controller.level], function (count, type) {
-                    if (roomStructures[type] === undefined || roomStructures[type] < count) {
-                        this.constructionSite(type, roomStructures[type]);
-                        return false;
-                    }
-                }.bind(this));
-            } else {
-                helperError.message("Controller is NULL")
-            }
-
-            //createConstructionSite(x, y, structureType, [name])
-            //(pos, structureType, [name])
-
-        },
-
-        constructionSite: function (type, index = 0) {
-            var name = type + Game.time;
-
-
-            for (var i = 0; i < 4; i++) {
-                var pos = this["_pos_" + type](index + i);
-                var status = room.createConstructionSite(pos.x, pos.y, type, name);
-                if (status === OK) {
-                    i = 4;
-                }
-            }
-
-            if (OK !== status) {
-                var message = helperError.message(status);
-                console.log(`Cannot construct ${type} @${pos.x},${pos.y}: ${message}`);
-            }
-
-        },
-
-        _pos_container: function (index) {
-            var origin = Game.getObjectById(room.memory.structure_spawn[0]).pos;
-            var x = origin.x;
-            var y = origin.y;
-            ++index;
-
-            if (index % 4 === 0) {
-                y -= (1);
-            }
-
-            if (index % 4 === 1) {
-                x -= (1);
-            }
-
-            if (index % 4 === 2) {
-                y += (1);
-            }
-
-            if (index % 4 === 3) {
-                x += (1);
-            }
-
-            return room.getPositionAt(x, y);
-        },
-
-        _pos_extension: function (index) {
-            var origin = Game.getObjectById(room.memory.structure_spawn[0]).pos;
-            var x = origin.x;
-            var y = origin.y;
-            ++index;
-
-            if (index % 4 === 0) {
-                x -= (2 * index);
-                y -= (2 * index);
-            }
-
-            if (index % 4 === 1) {
-                x += (2 * index);
-                y -= (2 * index);
-            }
-
-            if (index % 4 === 2) {
-                x -= (2 * index);
-                y += (2 * index);
-            }
-
-            if (index % 4 === 3) {
-                x += (2 * index);
-                y += (2 * index);
-            }
-
-            return room.getPositionAt(x, y);
-        },
 
 
         /**

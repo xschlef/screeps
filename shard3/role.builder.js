@@ -19,7 +19,7 @@ let roleBuilder = (function () {
             }
 
             if (creep.memory.state === c.STATE_CREEP_BUILDING) {
-                if(! this.repair()) {
+                if (!this.repair()) {
                     this.build();
                 }
             } else if (creep.memory.state === c.STATE_CREEP_HARVESTING) {
@@ -31,7 +31,7 @@ let roleBuilder = (function () {
         },
 
         repair: function () {
-            var closestDamagedStructure = creep.pos.findClosestByRange(FIND_MY_STRUCTURES,{
+            var closestDamagedStructure = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                 filter: (structure) => {
                     return (structure.hits < (structure.hitsMax / 2));
                 }
@@ -43,7 +43,17 @@ let roleBuilder = (function () {
         },
 
         build: function () {
-            let targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+            // priority handling for these structures
+            let targets = creep.room.find(FIND_MY_CONSTRUCTION_SITES, {
+                filter: (site) => {
+                    return site.structureType === STRUCTURE_EXTENSION ||
+                        site.structureType === STRUCTURE_TOWER;
+                }
+            });
+            // only construct these if no priority building found
+            if (targets.length === 0) {
+                targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+            }
             if (targets.length > 0) {
                 if (creep.build(targets[0]) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
@@ -56,7 +66,7 @@ let roleBuilder = (function () {
         harvest: function () {
             let spawn = Game.getObjectById(creep.room.memory.structure_spawn[0]);
 
-            if (spawn !== null && creep.room.energyAvailable > 600) {
+            if (spawn !== null && creep.room.memory.energyPercent > 80) {
                 let targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (
@@ -72,8 +82,16 @@ let roleBuilder = (function () {
                 }
                 return false;
             } else {
-                creep.moveTo(Game.getObjectById(creep.memory.home));
-                return false;
+                let targets = creep.room.find(FIND_SOURCES);
+                if (targets.length > 0) {
+                    // always pick the last source
+                    if (creep.harvest(targets[targets.length -1])  === ERR_NOT_IN_RANGE) {
+                        creep.moveTo(targets[targets.length -1], {visualizePathStyle: {stroke: '#ffaa00'}});
+                    }
+                } else {
+                    creep.moveTo(Game.getObjectById(creep.memory.home));
+                    return false;
+                }
             }
         },
     }

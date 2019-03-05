@@ -3,24 +3,33 @@
  */
 var structureSpawn = (function () {
     var helperError = require('helper.error');
+    var cache = require('helper.cache');
     var room;
     var spawn;
 
     var rolePriorities = {
-        'harvester': 5,
+        'harvester': 3,
         'upgrader': 6,
         'builder': 1,
     };
 
     var sourcePriorites = [
-            "5bbcafd19099fc012e63b3d0", // E47S6 at spawn
-            "5bbcafd19099fc012e63b3d0", // E47S6 at spawn
-            "5bbcafd19099fc012e63b3d0", // E47S6 at spawn
-            "5bbcafd19099fc012e63b3ce", // E47S6 
-            "5bbcafe29099fc012e63b55b", // E48S6
-            "5bbcafe29099fc012e63b55b", // E48S6
-            "5bbcafe29099fc012e63b55b"  // E48S6
+        "5bbcab6f9099fc012e633806",
+        "5bbcab6f9099fc012e633806",
+        "5bbcab6f9099fc012e633806",
+        "5bbcab6f9099fc012e633805",
+        "5bbcab6f9099fc012e633806"
+
     ];
+
+    var modules = {
+        "work": [WORK, CARRY, MOVE, MOVE],
+        "upgrader": [WORK, CARRY, MOVE, MOVE],
+        "harvester": [WORK, CARRY, MOVE, MOVE],
+        "builder": [WORK, CARRY, MOVE, MOVE],
+        "attack": [ATTACK, TOUGH, MOVE, MOVE],
+        "defend": [RANGED_ATTACK, MOVE]
+    };
 
     return {
 
@@ -36,6 +45,19 @@ var structureSpawn = (function () {
             this.renewCreeps();
             this.spawnCreeps();
             this.fixSources();
+
+            room.visual.text(
+                `Energy: ${room.memory.energyPercent}%`,
+                spawn.pos.x + 1,
+                spawn.pos.y - 1,
+                {align: 'left', opacity: 0.8}
+            );
+            room.visual.text(
+                `Max: ${room.energyCapacityAvailable}`,
+                spawn.pos.x + 1,
+                spawn.pos.y,
+                {align: 'left', opacity: 0.8}
+            );
         },
         fixSources: function () {
             if(!spawn.memory.hasOwnProperty("fix_src")) {
@@ -70,7 +92,9 @@ var structureSpawn = (function () {
         },
         spawnCreeps: function () {
             var creeps = room.find(FIND_MY_CREEPS);
-            var creepRoles = {};
+            // fix init
+            var creepRoles = {"harvester": 0, "upgrader": 0, "builder": 0};
+
 
             // Get counts of each role in the current room
             if (creeps.length) {
@@ -80,6 +104,10 @@ var structureSpawn = (function () {
                 });
             }
 
+            // safety net if we have no harvester, spawn one no matter how good it is
+            if (room.memory.energyPercent < 80 && creepRoles["harvester"] > 1) {
+                return false;
+            }
             // Check the creep list against the priorities list and spawn as
             // needed
             _.forOwn(rolePriorities, function (count, role) {
@@ -104,50 +132,39 @@ var structureSpawn = (function () {
                 memory: memory
             });
 
-            if (OK === status || ERR_BUSY === status) {
-                this.spawnMessage();
-            } else {
+            if (!(OK === status || ERR_BUSY === status)) {
                 var message = helperError.message(status);
                 console.log(`Cannot spawn ${role}: ${message}`);
             }
         },
-        // parts cost:
-        // https://screeps.fandom.com/wiki/Creep
-        _spawn_upgrader: function (count) {
-            if (room.energyAvailable > 749) {
-                this.spawnCreep('upgrader',
-                    [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], count);
-                return;
-            }
-            if (room.energyAvailable > 599 && room.energyCapacityAvailable < 750) {
-                this.spawnCreep('upgrader',
-                    [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], count);
-                return;
-            }
-            if (room.energyAvailable > 499 && room.energyCapacityAvailable < 600) {
-                this.spawnCreep('upgrader', [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], count);
-                return;
-            }
+        calculate_parts: function(role) {
+            let usedEnergy = 0;
+            let moduleCost = 0;
+            let parts = [];
+            modules[role].forEach( function(item) {
+                moduleCost += BODYPART_COST[item];
+            });
 
-            if (room.energyCapacityAvailable < 350 && room.energyAvailable > 249) {
-                this.spawnCreep('upgrader', [WORK, CARRY, MOVE, MOVE], count);
+            if (moduleCost === 0) {
+                console.log("Bad module cost");
                 return;
             }
+            while (usedEnergy < room.energyAvailable) {
+                if (usedEnergy + moduleCost < room.energyAvailable) {
+                    parts = parts.concat(modules[role]);
+                }
+                usedEnergy += moduleCost;
+            }
+            console.log("Using parts: " + parts);
+            return parts;
+
+        },
+        _spawn_upgrader: function (count) {
+            this.spawnCreep('upgrader', this.calculate_parts('upgrader'), count);
         },
         _spawn_harvester: function (count) {
-            if (room.energyAvailable > 749) {
-                this.spawnCreep('harvester',
-                    [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], count);
-                return;
-            }
-            if (room.energyAvailable > 599 && count < 4) {
-                this.spawnCreep('harvester',
-                    [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
-                    count);
-                return;
-            }
-            if (room.energyAvailable > 499 && count < 3) {
-                this.spawnCreep('harvester', [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], count);
+            if (room.energyCapacityAvailable >= 350) {
+                this.spawnCreep('harvester', this.calculate_parts('harvester'), count);
                 return;
             }
             if (room.energyCapacityAvailable < 350 && room.energyAvailable > 249 && count < 2) {
@@ -155,51 +172,19 @@ var structureSpawn = (function () {
                 return;
             }
             if (Game.creeps < 1 && room.energyAvailable > 249) {
-                this.spawnCreep('harvester', [WORK, CARRY, CARRY, MOVE, MOVE], count);
+                this.spawnCreep('harvester', [WORK, CARRY, MOVE, MOVE], count);
             }
         },
         _spawn_builder: function (count) {
             if (room.energyAvailable > 749) {
-                this.spawnCreep('builder',
-                    [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], count);
-                return;
-            }
-            if (room.energyAvailable > 599 && room.energyCapacityAvailable < 750) {
-                this.spawnCreep('builder',
-                    [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
-                    count);
-                return;
-            }
-            if (room.energyAvailable > 499 && room.energyCapacityAvailable < 600) {
-                this.spawnCreep('builder', [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], count);
-            }
-            if (room.energyCapacityAvailable < 350 && room.energyAvailable > 249) {
-                this.spawnCreep('builder', [WORK, CARRY, MOVE, MOVE], count);
+                this.spawnCreep('builder', this.calculate_parts('builder'), count);
             }
         },
         _spawn_attacker: function (count) {
-            if (room.energyAvailable > 130) {
-                this.spawnCreep('attacker', [ATTACK, MOVE], count);
-            }
+            this.spawnCreep('attacker', this.calculate_parts("attack"), count);
         },
-        spawnMessage: function () {
-            if (spawn.spawning) {
-                var creep = Game.creeps[spawn.spawning.name];
-                var time = spawn.spawning;
-
-                // The spawning message appears a tick late. This is why we
-                // have to add one to remainingTime
-                var percent = Math.floor(
-                    ((time.needTime - time.remainingTime + 1) / time.needTime) * 100
-                );
-
-                room.visual.text(
-                    `${creep.memory.role} (${percent}%)`,
-                    spawn.pos.x,
-                    spawn.pos.y + 1.5,
-                    {align: 'center', opacity: 0.8}
-                );
-            }
+        _spawn_defender: function (count) {
+            this.spawnCreep('defender', this.calculate_parts("defend"), count);
         }
     }
 })();

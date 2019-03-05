@@ -24,9 +24,9 @@ let roleHarvester = {
             let targets = creep.room.find(FIND_MY_STRUCTURES, {
                 filter: (structure) => {
                     return (
+                        structure.structureType === STRUCTURE_TOWER ||
                         structure.structureType === STRUCTURE_EXTENSION ||
-                        structure.structureType === STRUCTURE_SPAWN ||
-                        structure.structureType === STRUCTURE_TOWER
+                        structure.structureType === STRUCTURE_SPAWN
                         ) && structure.energy < structure.energyCapacity;
                 }
             });
@@ -37,7 +37,18 @@ let roleHarvester = {
                         creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                     }
                 } else {
-                    creep.moveTo(Game.getObjectById(creep.memory.home));
+                    let home = Game.getObjectById(creep.memory.home);
+                    targets = home.room.find(FIND_STRUCTURES, {
+                        filter: (structure) => {
+                            return (
+                                structure.structureType === STRUCTURE_CONTAINER
+                            ) && structure.energy < structure.energyCapacity;
+                        }
+                    });
+                    let error = creep.transfer(targets[0], RESOURCE_ENERGY);
+                    if (error === ERR_NOT_IN_RANGE) {
+                        creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                    }
                 }
             } else {
                 creep.memory.state = c.STATE_CREEP_HARVESTING;

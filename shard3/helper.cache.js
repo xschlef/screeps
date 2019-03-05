@@ -4,10 +4,11 @@ var helperCache = (function () {
     return {
         run: function (currentRoom) {
             room = currentRoom;
-
+            room.memory['energyPercent'] = Math.ceil((room.energyAvailable / room.energyCapacityAvailable) * 100);
             this.garbageCollect();
             this.cacheStructure(STRUCTURE_CONTROLLER);
             this.cacheStructure(STRUCTURE_SPAWN);
+            this.cacheStructure(STRUCTURE_TOWER);
         },
 
         /**

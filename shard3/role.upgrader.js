@@ -22,12 +22,17 @@ var roleUpgrader = {
             }
         }
         if (creep.memory.state === c.STATE_CREEP_HARVESTING) {
-            if(creep.room.energyAvailable > 800) {
-                let targets = creep.room.find(FIND_MY_STRUCTURES, {
+            // safeguard if so the builders use stored energy only if we are not in bootstrap phase
+            if(creep.room.memory.hasOwnProperty("energyPercent") &&
+                creep.room.memory.energyPercent > 85 &&
+                creep.room.energyAvailable > 350
+            ) {
+                let targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (
                             structure.structureType === STRUCTURE_EXTENSION ||
-                            structure.structureType === STRUCTURE_SPAWN
+                            structure.structureType === STRUCTURE_SPAWN ||
+                            structure.structureType === STRUCTURE_CONTAINER
                         ) && structure.energy === structure.energyCapacity;
                     }
                 });
