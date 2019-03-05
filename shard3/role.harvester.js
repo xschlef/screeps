@@ -21,24 +21,25 @@ let roleHarvester = {
         }
 
         if (creep.memory.state === c.STATE_CREEP_TRANSFERRING) {
-            let targets = creep.room.find(FIND_MY_STRUCTURES, {
+            let target = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
                 filter: (structure) => {
                     return (
                         structure.structureType === STRUCTURE_TOWER ||
                         structure.structureType === STRUCTURE_EXTENSION ||
                         structure.structureType === STRUCTURE_SPAWN
-                        ) && structure.energy < structure.energyCapacity;
+                        ) && structure.energy < structure.energyCapacity &&
+                        creep.room.name === structure.room.name;
                 }
             });
             if (creep.carry.energy !== 0) {
-                if (targets.length > 0) {
-                    let error = creep.transfer(targets[0], RESOURCE_ENERGY);
+                if (target) {
+                    let error = creep.transfer(target, RESOURCE_ENERGY);
                     if (error === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                        creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
                     }
                 } else {
                     let home = Game.getObjectById(creep.memory.home);
-                    targets = home.room.find(FIND_STRUCTURES, {
+                    let targets = home.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
                             return (
                                 structure.structureType === STRUCTURE_CONTAINER

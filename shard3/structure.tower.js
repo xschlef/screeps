@@ -20,23 +20,26 @@ var structureTower = (function () {
                         return;
                     }
 
-                    var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-                        filter: (structure) => (structure.hits < Math.floor(structure.hitsMax / 2)) &&
-                        (structure.structureType !== STRUCTURE_WALL)
-                    });
-                    if (closestDamagedStructure !== null) {
-                        tower.repair(closestDamagedStructure);
-                        return;
-                    }
+                    // only repair or heal if enough energy is available
+                    if ((tower.energy / tower.energyCapacity) * 100 > 80) {
+                        var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+                            filter: (structure) => (structure.hits < Math.floor(structure.hitsMax / 2)) &&
+                                (structure.structureType !== STRUCTURE_WALL)
+                        });
+                        if (closestDamagedStructure !== null) {
+                            tower.repair(closestDamagedStructure);
+                            return;
+                        }
 
-                    var closestDamagedCreep = tower.pos.findClosestByRange(FIND_MY_CREEPS, {
-                        filter: (c) => c.hits < c.hitsMax
-                    });
+                        var closestDamagedCreep = tower.pos.findClosestByRange(FIND_MY_CREEPS, {
+                            filter: (c) => c.hits < c.hitsMax
+                        });
 
-                    if (closestDamagedCreep) {
-                        tower.heal(closestDamagedCreep);
-                        console.log("Healing " + closestDamagedCreep.name);
-                        return;
+                        if (closestDamagedCreep) {
+                            tower.heal(closestDamagedCreep);
+                            console.log("Healing " + closestDamagedCreep.name);
+                            return;
+                        }
                     }
                 }
             }

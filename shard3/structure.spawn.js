@@ -8,9 +8,9 @@ var structureSpawn = (function () {
     var spawn;
 
     var rolePriorities = {
-        'harvester': 3,
+        'harvester': 4,
         'upgrader': 6,
-        'builder': 1,
+        'builder': 2,
     };
 
     var sourcePriorites = [
@@ -23,7 +23,6 @@ var structureSpawn = (function () {
     ];
 
     var modules = {
-        "work": [WORK, CARRY, MOVE, MOVE],
         "upgrader": [WORK, CARRY, MOVE, MOVE],
         "harvester": [WORK, CARRY, MOVE, MOVE],
         "builder": [WORK, CARRY, MOVE, MOVE],
@@ -104,7 +103,8 @@ var structureSpawn = (function () {
                 });
             }
 
-            // safety net if we have no harvester, spawn one no matter how good it is
+            // pump at least 80 percent of the energy into spawning a new creep
+            // this is only needed if we have at least one harvester
             if (room.memory.energyPercent < 80 && creepRoles["harvester"] > 1) {
                 return false;
             }
@@ -176,9 +176,7 @@ var structureSpawn = (function () {
             }
         },
         _spawn_builder: function (count) {
-            if (room.energyAvailable > 749) {
-                this.spawnCreep('builder', this.calculate_parts('builder'), count);
-            }
+            this.spawnCreep('builder', this.calculate_parts('builder'), count);
         },
         _spawn_attacker: function (count) {
             this.spawnCreep('attacker', this.calculate_parts("attack"), count);

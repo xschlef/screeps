@@ -6,6 +6,11 @@ var helperConstants = (function () {
         STATE_CREEP_TRANSFERRING: 3,
         STATE_CREEP_BUILDING: 4,
         STATE_CREEP_UPGRADING: 5,
+        STATE_CREEP_REPAIRING: 6,
+        STATE_BUILDING_IDLE: 0,
+        STATE_BUILDING_REPAIRING: 90,
+        STATE_BUILDING_ATTACKING: 99,
+        STATE_BUILDING_HEALING: 10
     }
 })();
 

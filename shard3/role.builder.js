@@ -19,27 +19,47 @@ let roleBuilder = (function () {
             }
 
             if (creep.memory.state === c.STATE_CREEP_BUILDING) {
-                if (!this.repair()) {
+                if (creep.memory.hasOwnProperty("repair_target")) {
+                    this.repair();
+                } else {
+                    let repair_target = this.get_repair_target();
+                    if (repair_target) {
+                        this.repair(repair_target);
+                    }
+                }
+                if (!creep.memory.hasOwnProperty("repair_target")) {
                     this.build();
                 }
             } else if (creep.memory.state === c.STATE_CREEP_HARVESTING) {
                 this.harvest();
             } else {
                 creep.memory.state = c.STATE_CREEP_HARVESTING;
-
             }
         },
-
-        repair: function () {
-            var closestDamagedStructure = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+        get_repair_target: function () {
+            return creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.hits < (structure.hitsMax / 2));
+                    return (structure.structureType !== STRUCTURE_WALL) &&
+                        (structure.hits < (structure.hitsMax / 2));
                 }
             });
-            if (closestDamagedStructure) {
-                creep.repair(closestDamagedStructure);
+        },
+        repair: function (target) {
+            if (target === null && creep.memory.hasOwnProperty("repair_target")) {
+                target = Game.getObjectById(creep.memory.repair_target);
             }
-            return closestDamagedStructure !== null;
+            if (target) {
+                if ((target.hits / target.hitsMax) * 100 > 75) {
+                    delete creep.memory.repair_target;
+                }
+                console.log("Repairing " + target.structureType);
+                creep.repair(target);
+            } else {
+                if (creep.memory.hasOwnProperty("repair_target")) {
+                    console.log("Finished repairing");
+                    delete creep.memory.repair_target;
+                }
+            }
         },
 
         build: function () {
@@ -47,7 +67,8 @@ let roleBuilder = (function () {
             let targets = creep.room.find(FIND_MY_CONSTRUCTION_SITES, {
                 filter: (site) => {
                     return site.structureType === STRUCTURE_EXTENSION ||
-                        site.structureType === STRUCTURE_TOWER;
+                        site.structureType === STRUCTURE_TOWER ||
+                        site.structureType === STRUCTURE_RAMPART;
                 }
             });
             // only construct these if no priority building found
